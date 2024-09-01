@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Finance Chatbot</title>
+  <style>
+    /* Add your CSS styles for the chatbot interface here */
+    /* Example styles */
+    body {
+      font-family: Arial, sans-serif;
+    }
+    .chat-container {
+      max-width: 400px;
+      margin: 20px auto;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .chat-box {
+      height: 300px;
+      overflow-y: scroll;
+      border-bottom: 1px solid #ccc;
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+    }
+    #user-input {
+      width: 70%;
+      padding: 5px;
+    }
+    button {
+      padding: 5px 10px;
+    }
+    .message {
+      margin-bottom: 10px;
+      padding: 5px 10px;
+      border-radius: 5px;
+    }
+    .user-message {
+      background-color: #e0e0e0;
+      text-align: right;
+    }
+    .bot-message {
+      background-color: #f0f0f0;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="chat-box" id="chat-box"></div>
+    <input type="text" id="user-input" placeholder="Type a message...">
+    <button onclick="sendMessage()">Send</button>
+  </div>
+
+  <script>
+    function sendMessage() {
+      const userInput = document.getElementById("user-input");
+      const chatBox = document.getElementById("chat-box");
+
+      if (userInput.value !== "") {
+        const userMessage = userInput.value;
+
+        // Display user message
+        const userDiv = document.createElement("div");
+        userDiv.className = "message user-message";
+        userDiv.innerHTML = `<p>${userMessage}</p>`;
+        chatBox.appendChild(userDiv);
+
+        // Process user message and provide bot response
+        const botResponse = generateBotResponse(userMessage);
+
+        // Display bot response
+        const botDiv = document.createElement("div");
+        botDiv.className = "message bot-message";
+        botDiv.innerHTML = `<p>${botResponse}</p>`;
+        chatBox.appendChild(botDiv);
+
+        // Clear user input
+        userInput.value = "";
+
+        // Scroll to the bottom of the chat box
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }
+    }
+
+    function generateBotResponse(userMessage) {
+      // Simple logic to ask financial questions and provide suggestions
+      let botResponse = "";
+
+      if (userMessage.toLowerCase().includes("income")) {
+        botResponse = "What is your monthly income?";
+      } else if (userMessage.toLowerCase().includes("expenses")) {
+        botResponse = "What are your major monthly expenses?";
+      } else if (userMessage.toLowerCase().includes("savings")) {
+        botResponse = "How much do you save each month?";
+      } else {
+        botResponse = "I'm a simple financial bot. Please provide more information for better suggestions.";
+      }
+
+      return botResponse;
+    }
+  </script>
+</body>
+</html>
