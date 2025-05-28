@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mood Tracker</title>
+  <style>
+    /* Reset and base styles */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #fce4ec, #f8bbd0);
+      overflow: hidden;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.9);
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      width: 90%;
+      max-width: 500px;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    h2 {
+      margin-bottom: 1rem;
+      color: #880e4f;
+    }
+
+    .slider-container {
+      margin: 1rem 0;
+    }
+
+    input[type=range] {
+      width: 100%;
+      accent-color: #d81b60;
+    }
+
+    .slider-value {
+      margin-top: 0.5rem;
+      font-weight: bold;
+      color: #ad1457;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      resize: vertical;
+      min-height: 100px;
+      margin-bottom: 1rem;
+      font-size: 1rem;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    button {
+      flex: 1;
+      padding: 0.75rem;
+      border: none;
+      border-radius: 8px;
+      background: #d81b60;
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #ad1457;
+    }
+
+    .smash-face {
+      font-size: 2rem;
+      transition: transform 0.1s;
+      display: inline-block;
+    }
+
+    .smash-face.smashed {
+      animation: shake 0.5s;
+    }
+
+    @keyframes shake {
+      0% { transform: rotate(0deg); }
+      25% { transform: rotate(15deg); }
+      50% { transform: rotate(-15deg); }
+      75% { transform: rotate(10deg); }
+      100% { transform: rotate(0deg); }
+    }
+
+    /* Floating elements background */
+    .floating-elements {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .floating-element {
+      position: absolute;
+      font-size: 1.5rem;
+      animation: floatUp linear infinite;
+      white-space: nowrap;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(100vh);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-10vh);
+        opacity: 0;
+      }
+    }
+
+    .mood-emoji {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <!-- Floating elements background -->
+  <div class="floating-elements" id="floatingElements"></div>
+
+  <div class="container">
+    <h2>How are you feeling today?</h2>
+    <form id="moodForm" action="save_mood.php" method="POST">
+      <span class="mood-emoji" id="moodEmoji">😐</span>
+      <div class="slider-container">
+        <input type="range" min="1" max="10" value="5" id="moodSlider" name="mood" />
+        <div class="slider-value">Mood: <span id="sliderValue">5</span></div>
+      </div>
+      <textarea name="reason" placeholder="Tell us why you feel this way..."></textarea>
+      <div class="buttons">
+        <button type="button" id="smashButton">
+          <span class="smash-face" id="faceIcon">&#128545;</span> Smash Face
+        </button>
+        <button type="submit">Submit</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    // Update slider value display and emoji
+    const moodSlider = document.getElementById('moodSlider');
+    const sliderValue = document.getElementById('sliderValue');
+    const moodEmoji = document.getElementById('moodEmoji');
+
+    function updateMoodDisplay(value) {
+      sliderValue.textContent = value;
+      if (value <= 3) {
+        moodEmoji.textContent = '😠';
+      } else if (value <= 6) {
+        moodEmoji.textContent = '😐';
+      } else if (value <= 8) {
+        moodEmoji.textContent = '😊';
+      } else {
+        moodEmoji.textContent = '😄';
+      }
+    }
+
+    moodSlider.addEventListener('input', () => {
+      updateMoodDisplay(moodSlider.value);
+    });
+
+    // Initialize display
+    updateMoodDisplay(moodSlider.value);
+
+    // Smash face animation
+    const smashButton = document.getElementById('smashButton');
+    const faceIcon = document.getElementById('faceIcon');
+
+    smashButton.addEventListener('click', () => {
+      faceIcon.classList.add('smashed');
+      setTimeout(() => {
+        faceIcon.classList.remove('smashed');
+      }, 500);
+    });
+
+    // Generate floating elements
+    const floatingContainer = document.getElementById('floatingElements');
+    const messages = ['❤️', 'I love you YB', '170(', '+12121212', 'I\'m sorry'];
+
+    function createFloatingElement() {
+      const elem = document.createElement('div');
+      elem.classList.add('floating-element');
+      elem.textContent = messages[Math.floor(Math.random() * messages.length)];
+      elem.style.left = Math.random() * 100 + 'vw';
+      elem.style.animationDuration = (5 + Math.random() * 5) + 's';
+      floatingContainer.appendChild(elem);
+      setTimeout(() => {
+        elem.remove();
+      }, 10000);
+    }
+
+    setInterval(createFloatingElement, 500);
+  </script>
+</body>
+</html>
